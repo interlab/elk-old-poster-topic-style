@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE package-info SYSTEM "http://www.elkarte.net/site/package-info">
+<!--
+/**
+ * @package oldpostertopicstyle
+ *
+ * @author inter
+ * @copyright 2016 inter
+ * @license MIT
+ * @version 0.0.1
+ *
+ */
+-->
+<package-info xmlns="http://www.elkarte.net/site/package-info" xmlns:elk="http://www.elkarte.net/">
+    <id>inter:oldpostertopicstyle</id>
+    <name>Old poster topic style</name>
+    <version>0.0.1</version>
+    <type>addon</type>
+    <install for="1.0.1 - 1.0.99">
+        <readme type="inline">This will install "Old poster topic style" mod</readme>
+        <modification>install.xml</modification>
+        <redirect url="?action=admin;area=packages" timeout="500" />
+    </install>
+
+    <uninstall for="1.0.1 - 1.0.99">
+        <readme type="inline">This will uninstall Old poster topic style" mod</readme>
+        <modification reverse="true">install.xml</modification>
+        <redirect url="?action=admin;area=packages" timeout="500" />
+    </uninstall>
+</package-info>

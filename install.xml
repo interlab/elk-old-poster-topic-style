@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.elkarte.net/site/modification">
+
+<modification xmlns="http://www.elkarte.net/site/modification" xmlns:elk="http://www.elkarte.net/">
+	<id>inter:oldpostertopicstyle</id>
+
+	<file name="THEMEDIR/scripts/theme.js">
+		<operation>
+			<search position="replace"><![CDATA[	// Menu drop downs
+	if (use_click_menu)
+		$('#main_menu, ul.admin_menu, ul.sidebar_menu, ul.poster, ul.quickbuttons, #sort_by').superclick({speed: 150, animation: {opacity:'show', height:'toggle'}, speedOut: 0, activeClass: 'sfhover'});
+	else
+		$('#main_menu, ul.admin_menu, ul.sidebar_menu, ul.poster, ul.quickbuttons, #sort_by').superfish({delay : 300, speed: 175, hoverClass: 'sfhover'});]]></search>
+			<add><![CDATA[// Menu drop downs
+	if (use_click_menu)
+		$('#main_menu, ul.admin_menu, ul.sidebar_menu, ul.quickbuttons, #sort_by').superclick({speed: 150, animation: {opacity:'show', height:'toggle'}, speedOut: 0, activeClass: 'sfhover'});
+	else
+		$('#main_menu, ul.admin_menu, ul.sidebar_menu, ul.quickbuttons, #sort_by').superfish({delay : 300, speed: 175, hoverClass: 'sfhover'});]]></add>
+		</operation>
+	</file>
+
+
+	<file name="THEMEDIR/css/index.css">
+		<operation>
+			<search position="end"><![CDATA[]]></search>
+			<add><![CDATA[
+
+/* OLD POSTER TOPIC STYLE */
+.poster ul.menulevel1 {
+    /*box-shadow: 0 0 10px rgba(0,0,0,0.5);*/
+    margin: 0 1em;
+}
+
+.poster li.listlevel1 {
+    margin: 0 1em;
+}
+
+.poster .listlevel1, .poster .name {
+    text-align: left;
+}
+
+li.poster_avatar .linklevel1 {
+    margin: 3px 0;
+}
+
+.poster li.listlevel1 a.name,
+.poster_avatar .linklevel1 {
+    padding: 0;
+}
+
+.poster .name {
+    padding: 6px 0;
+}]]></add>
+		</operation>
+	</file>
+
+	<file name="THEMEDIR/GenericMessages.template.php">
+		<operation>
+			<search position="replace"><![CDATA[// Show information about the poster of this message.
+	$poster_div .= '
+							<li class="' . ($ignoring ? 'subsections"' : 'listlevel1 subsections"') . ' aria-haspopup="true">';]]></search>
+			<add><![CDATA[// Show information about the poster of this message.
+	$poster_div .= '
+							<li class="' . ($ignoring ? 'subsections"' : 'listlevel1"') . ' >';]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA[// Don't show the email address if they want it hidden.
+			if (in_array($message['member']['show_email'], array('yes', 'yes_permission_override', 'no_through_forum')) && $context['can_send_email'])
+				$poster_div .= '
+											<li><a href="' . $scripturl . '?action=emailuser;sa=email;msg=' . $message['id'] . '" rel="nofollow">' . ($settings['use_image_buttons'] ? '<img src="' . $settings['images_url'] . '/profile/email_sm.png" alt="' . $txt['email'] . '" title="' . $txt['email'] . '" />' : $txt['email']) . '</a></li>';
+
+			$poster_div .= '
+										</ol>
+									</li>';
+		}]]></search>
+			<add><![CDATA[// Don't show the email address if they want it hidden.
+			if (in_array($message['member']['show_email'], array('yes', 'yes_permission_override', 'no_through_forum')) && $context['can_send_email'])
+				$poster_div .= '
+											<li><a href="' . $scripturl . '?action=emailuser;sa=email;msg=' . $message['id'] . '" rel="nofollow">' . ($settings['use_image_buttons'] ? '<img src="' . $settings['images_url'] . '/profile/email_sm.png" alt="' . $txt['email'] . '" title="' . $txt['email'] . '" />' : $txt['email']) . '</a></li>';
+
+			$poster_div .= '
+											<li><a href="' . $scripturl. '?action=pm;sa=send;u='. $message['member']['id']. '"><img src="'.
+						$settings['images_url']. '/profile/'. ($message['member']['online']['is_online'] ? 'im_on.png' : 'im_off.png'). '" alt="'.
+						$txt['profile_sendpm_short']. '" title="'. $txt['profile_sendpm_short']. ' to '. $message['member']['name']. '" class="icon"/></a></li>
+
+										</ol>
+									</li>';
+		}]]></add>
+		</operation>
+		
+		<operation>
+			<search position="replace"><![CDATA[// The new member info dropdown starts here. Note that conditionals have not been fully checked yet.
+	$poster_div .= '
+								<ul class="menulevel2" id="msg_' . $message['id'] . '_extra_info"' . ($ignoring ? ' style="display:none;"' : ' aria-haspopup="true"') . '>';
+
+	// Don't show these things for guests.
+	if (!$message['member']['is_guest'])]]></search>
+			<add><![CDATA[// The new member info dropdown starts here. Note that conditionals have not been fully checked yet.
+	$poster_div .= '
+							</li>';
+
+	// Show avatars, images, etc.?
+	if (empty($options['hide_poster_area']) && !$ignoring)
+	{
+		if (!empty($settings['show_user_images']) && empty($options['show_no_avatars']) && !empty($message['member']['avatar']['image']))
+			$poster_div .= '
+							<li class="listlevel1 poster_avatar">
+								<a class="linklevel1" href="' . $scripturl . '?action=profile;u=' . $message['member']['id'] . '">
+									' . $message['member']['avatar']['image'] . '
+								</a>
+							</li>';
+
+		// Show the post group icons, but not for guests.
+		if (!$message['member']['is_guest'])
+			$poster_div .= '
+							<li class="listlevel1 icons">' . $message['member']['group_icons'] . '</li>';
+
+		// Show the member's primary group (like 'Administrator') if they have one.
+		if (!empty($message['member']['group']))
+			$poster_div .= '
+							<li class="listlevel1 membergroup">' . $message['member']['group'] . '</li>';
+        
+        	// The new member info dropdown starts here. Note that conditionals have not been fully checked yet.
+	$poster_div .= '
+								<ul class="menulevel1">';
+
+	// Don't show these things for guests.
+	if (!$message['member']['is_guest'])]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA[// Show avatars, images, etc.?
+	if (empty($options['hide_poster_area']) && !$ignoring)
+	{
+		if (!empty($settings['show_user_images']) && empty($options['show_no_avatars']) && !empty($message['member']['avatar']['image']))
+			$poster_div .= '
+							<li class="listlevel1 poster_avatar">
+								<a class="linklevel1" href="' . $scripturl . '?action=profile;u=' . $message['member']['id'] . '">
+									' . $message['member']['avatar']['image'] . '
+								</a>
+							</li>';
+
+		// Show the post group icons, but not for guests.
+		if (!$message['member']['is_guest'])
+			$poster_div .= '
+							<li class="listlevel1 icons">' . $message['member']['group_icons'] . '</li>';
+
+		// Show the member's primary group (like 'Administrator') if they have one.
+		if (!empty($message['member']['group']))
+			$poster_div .= '
+							<li class="listlevel1 membergroup">' . $message['member']['group'] . '</li>';
+
+		// Show the member's custom title, if they have one.]]></search>
+			<add><![CDATA[		/* replace code o-p-t-s 1 */
+		
+		// Show the member's custom title, if they have one.]]></add>
+		</operation>
+
+		<operation>
+			<search position="replace"><![CDATA[	// we start with their own..
+		if ($context['can_send_pm'] && $message['is_message_author'])
+		{
+			$poster_div .= '
+							<li class="listlevel1 poster_online"><a class="linklevel1' . ($context['user']['unread_messages'] > 0 ? ' new_pm' : '') . '" href="' . $scripturl . '?action=pm">' . $txt['pm_short'] . ' ' . ($context['user']['unread_messages'] > 0 ? '<span class="pm_indicator">' . $context['user']['unread_messages'] . '</span>' : '') . '</a></li>';
+		}
+		// Allowed to send PMs and the message is not their own and not from a guest.
+		elseif ($context['can_send_pm'] && !$message['is_message_author'] && !$message['member']['is_guest'])
+		{
+			if (!empty($modSettings['onlineEnable']))
+				$poster_div .= '
+							<li class="listlevel1 poster_online"><a class="linklevel1" href="' . $scripturl . '?action=pm;sa=send;u=' . $message['member']['id'] . '" title="' . $message['member']['online']['member_online_text'] . '">' . $txt['send_message'] . ' <img src="' . $message['member']['online']['image_href'] . '" alt="" /></a></li>';
+			else
+				$poster_div .= '
+							<li class="listlevel1 poster_online"><a class="linklevel1" href="' . $scripturl . '?action=pm;sa=send;u=' . $message['member']['id'] . '">' . $txt['send_message'] . ' </a></li>';
+		}
+		// Not allowed to send a PM, online status disabled and not from a guest.
+		else]]></search>
+			<add><![CDATA[/* replace code o-p-t-s 2 */]]></add>
+		</operation>
+		
+		
+	</file>
+</modification>

@@ -79,11 +79,14 @@ li.poster_avatar .linklevel1 {
 				$poster_div .= '
 											<li><a href="' . $scripturl . '?action=emailuser;sa=email;msg=' . $message['id'] . '" rel="nofollow">' . ($settings['use_image_buttons'] ? '<img src="' . $settings['images_url'] . '/profile/email_sm.png" alt="' . $txt['email'] . '" title="' . $txt['email'] . '" />' : $txt['email']) . '</a></li>';
 
-			$poster_div .= '
+			if ($context['can_send_pm']) {
+				$poster_div .= '
 											<li><a href="' . $scripturl. '?action=pm;sa=send;u='. $message['member']['id']. '"><img src="'.
-						$settings['images_url']. '/profile/'. ($message['member']['online']['is_online'] ? 'im_on.png' : 'im_off.png'). '" alt="'.
-						$txt['profile_sendpm_short']. '" title="'. $txt['profile_sendpm_short']. ' to '. $message['member']['name']. '" class="icon"/></a></li>
+						$settings['images_url']. '/profile/'. ($message['member']['online']['is_online'] ? 'im_on.png' : 'im_off.png'). '" ' .
+						'alt="' . $txt['email'] . '" title="' . ($message['member']['online']['is_online'] ? $txt['pm_online'] : $txt['pm_offline']) . '" class="icon"/></a></li>';
+			}
 
+			$poster_div .= '
 										</ol>
 									</li>';
 		}]]></add>
